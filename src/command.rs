@@ -1,9 +1,9 @@
 // There are commands - the final result of calculations.
 
 #[derive(Debug, Clone)]
-pub enum Command<'a> {
-    Named(&'a str),
-    Group(GroupKind, Vec<Command<'a>>),
+pub enum Command {
+    Named(String),
+    Group(GroupKind, Vec<Command>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -12,7 +12,7 @@ pub enum GroupKind {
     Sequential,
 }
 
-impl<'a> Command<'a> {
+impl Command {
     pub fn to_json(&self) -> String {
         match self {
             Self::Named(name) => named_json(name),
@@ -20,7 +20,7 @@ impl<'a> Command<'a> {
         }
     }
 
-    fn unpack_group(&self, kind: &GroupKind) -> Option<Vec<Command<'a>>> {
+    fn unpack_group(&self, kind: &GroupKind) -> Option<Vec<Command>> {
         match self {
             Self::Named(_) => None,
             Self::Group(group_kind, inner) => {
@@ -37,7 +37,7 @@ fn named_json(name: &str) -> String {
     format!(r#"{{"type":"named","data":{{"name":"{name}"}}}}"#,)
 }
 
-fn named_group(group: &GroupKind, commands: &Vec<Command>) -> String {
+fn named_group(group: &GroupKind, commands: &[Command]) -> String {
     let commands_json = commands
         .iter()
         .map(|cmd| cmd.to_json())
@@ -62,26 +62,24 @@ impl GroupKind {
         .to_string()
     }
 
-    pub fn group<'a>(&self, commands: [Command<'a>; 2]) -> Command<'a> {
-        match self {
-            _ => {
-                let mut final_commands = Vec::new();
-                for cmd in commands {
-                    // if cmd is the same kind as self, then we just push all of its contents into
-                    // final_commands. Otherwise, we can just push the command itself.
-                    if let Some(mut inner) = cmd.unpack_group(self) {
-                        final_commands.append(&mut inner);
-                    } else {
-                        final_commands.push(cmd);
-                    }
-                }
-                Command::Group(self.clone(), final_commands)
+    pub fn group(&self, commands: &[Command]) -> Command {
+        let mut final_commands = Vec::new();
+        for cmd in commands {
+            // if cmd is the same kind as self, then we just push all of its contents into
+            // final_commands. Otherwise, we can just push the command itself.
+            if let Some(mut inner) = cmd.unpack_group(self) {
+                final_commands.append(&mut inner);
+            } else {
+                final_commands.push(cmd.clone());
             }
         }
+        Command::Group(self.clone(), final_commands)
     }
 }
 
-impl<'a> Command<'a> {
+// This is a helpful util for debugging, not really useful in the app itself.
+impl Command {
+    #[allow(dead_code)]
     pub fn pretty(&self) -> String {
         match self {
             Self::Named(name) => format!("<{name}>"),

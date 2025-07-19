@@ -13,9 +13,9 @@ pub enum Expr<'a> {
 impl Expr<'_> {
     pub fn produce(&self) -> Command {
         match self {
-            Self::Literal(literal) => Command::Named(literal),
+            Self::Literal(literal) => Command::Named(literal.to_string()),
             Self::Grouping(inner) => inner.produce(),
-            Self::Combination(kind, left, right) => kind.group([left.produce(), right.produce()]),
+            Self::Combination(kind, left, right) => kind.group(&[left.produce(), right.produce()]),
         }
     }
 }

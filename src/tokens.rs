@@ -43,12 +43,12 @@ impl<'a> Tokenizer<'a> {
         }
     }
 
-    pub fn tokenize(&mut self) -> &Vec<Token<'a>> {
+    pub fn tokenize(mut self) -> Vec<Token<'a>> {
         while self.start < self.source.len() {
             self.one_token();
             self.start = self.curr;
         }
-        &self.tokens
+        self.tokens
     }
 
     fn one_token(&mut self) {

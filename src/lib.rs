@@ -7,6 +7,7 @@ use std::{
     io::{BufRead, BufReader},
 };
 
+use command::GroupKind;
 use parse::Parser;
 use tokens::Tokenizer;
 
@@ -16,18 +17,17 @@ pub fn run(args: &mut impl Iterator<Item = String>) -> Result<(), String> {
     let file_path = args.next().ok_or("File path not supplied.")?;
     let file = File::open(file_path).map_err(|err| err.to_string())?;
     let rdr = BufReader::new(file);
-    let mut tokenizer;
-    let mut parser;
+    let mut all_commands = Vec::new();
     for line in rdr.lines() {
         let line = line.map_err(|err| err.to_string())?;
-        tokenizer = Tokenizer::new(&line);
+        let tokenizer = Tokenizer::new(&line);
         let tokens = tokenizer.tokenize();
-        println!("tokens: {tokens:?}");
-        parser = Parser::new(tokens.clone());
+        let mut parser = Parser::new(tokens);
         let expr = parser.expression();
-        let cmd = expr.produce().pretty();
-
-        println!("parse as: {cmd:?}");
+        let cmd = expr.produce();
+        all_commands.push(cmd);
     }
+    let command = GroupKind::Sequential.group(&all_commands);
+    println!("{}", command::finalize_json(&command.to_json()));
     Ok(())
 }
