@@ -44,6 +44,8 @@ The following symbols are currently supported in the `auto_gen` language, ordere
 
 | Symbol | Meaning | Example |
 | -- | -- | -- |
+| `*` | Race group | `A * B` runs A and B in parallel until any finish |
+| `?` | Deadline group | `A ? B` runs A and B in parallel until A finishes |
 | `&` | Parallel group | `A & B` runs A and B in parallel. |
 | `+` | Sequential group | `A + B` runs A to completion, then B. |
 
