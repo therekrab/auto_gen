@@ -58,7 +58,7 @@ pub fn finalize_json(json: &str) -> String {
 impl GroupKind {
     fn name(&self) -> String {
         match self {
-            Self::Sequential => "sequence",
+            Self::Sequential => "sequential",
             Self::Parallel => "parallel",
             Self::Deadline => "deadline",
             Self::Race => "race",
