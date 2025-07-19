@@ -17,7 +17,7 @@ Here, we run this sequence:
 We never have to open PathPlanner to edit or create this auton - not anymore. Instead, open a new file, say `auton.txt` and put the following contents in it:
 
 ```text
-A + B * C + D
+A + B & C + D
 ```
 
 Let's break down the syntax here.
@@ -29,8 +29,8 @@ If all we had written was `"hello world"` instead of the real contents, this wou
 
 Secondly, we seem to be adding and multiplying command names.
 What's up with this?
-Well, in the `auto_gen` language, the plus sign (`+`) indicates sequencing commands together, and the star (`*`) runs them in parallel.
-The parallel operator (`*`) has precidence, which is why the expression is equivalent to `A + (B * C) + D`.
+Well, in the `auto_gen` language, the plus sign (`+`) indicates sequencing commands together, and the ampersand (`&`) runs them in parallel.
+The parallel operator (`&`) has precidence, which is why the expression is equivalent to `A + (B & C) + D`.
 That's right - this language supports grouping with parenthesis to make sure command flow is as you would expect.
 Nesting these is also allowed.
 
@@ -44,7 +44,7 @@ The following symbols are currently supported in the `auto_gen` language, ordere
 
 | Symbol | Meaning | Example |
 | -- | -- | -- |
-| `*` | Parallel group | `A * B` runs A and B in parallel. |
+| `&` | Parallel group | `A & B` runs A and B in parallel. |
 | `+` | Sequential group | `A + B` runs A to completion, then B. |
 
 More combinations (race groups, deadline groups) are coming and will be supported soon.
@@ -59,23 +59,23 @@ The following examples are illegal:
 
 ```text
 A +
-B * C
+B & C
 ```
 
 The first line uses the `+` operator but doesn't supply a second operand.
 
 ```text
 A + B + (C
-* D * F)
+& D & F)
 ```
 
 This has two problems - firstly, the opening paren on the first line isn't closed on the same line - making it an invalid line.
-Secondly, the second line begins with a `*` operator but no previous command name to use; again, invalid.
+Secondly, the second line begins with a `&` operator but no previous command name to use; again, invalid.
 
 Proper use of newlines can be used to group related logic together:
 
 ```text
-Intake * Drive to piece
+Intake & Drive to piece
 Drive to score
 Score
 ```
