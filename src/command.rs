@@ -10,6 +10,8 @@ pub enum Command {
 pub enum GroupKind {
     Parallel,
     Sequential,
+    Deadline,
+    Race,
 }
 
 impl Command {
@@ -58,6 +60,8 @@ impl GroupKind {
         match self {
             Self::Sequential => "sequence",
             Self::Parallel => "parallel",
+            Self::Deadline => "deadline",
+            Self::Race => "race",
         }
         .to_string()
     }

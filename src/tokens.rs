@@ -8,6 +8,8 @@ pub enum Token<'a> {
 pub enum Symbol {
     Plus,
     And,
+    Question,
+    Star,
     OpenParen,
     CloseParen,
 }
@@ -19,6 +21,8 @@ impl Symbol {
             '&' => Some(Self::And),
             '(' => Some(Self::OpenParen),
             ')' => Some(Self::CloseParen),
+            '?' => Some(Self::Question),
+            '*' => Some(Self::Star),
             _ => None,
         }
     }

@@ -45,10 +45,28 @@ impl<'a> Parser<'a> {
     }
 
     fn parallel(&mut self) -> Expr<'a> {
-        let mut left = self.primary();
+        let mut left = self.deadline();
         while self.matches(Symbol::And) {
-            let right = self.primary();
+            let right = self.deadline();
             left = Expr::Combination(GroupKind::Parallel, Box::new(left), Box::new(right));
+        }
+        left
+    }
+
+    fn deadline(&mut self) -> Expr<'a> {
+        let mut left = self.race();
+        while self.matches(Symbol::Question) {
+            let right = self.race();
+            left = Expr::Combination(GroupKind::Deadline, Box::new(left), Box::new(right));
+        }
+        left
+    }
+
+    fn race(&mut self) -> Expr<'a> {
+        let mut left = self.primary();
+        while self.matches(Symbol::Star) {
+            let right = self.primary();
+            left = Expr::Combination(GroupKind::Race, Box::new(left), Box::new(right));
         }
         left
     }

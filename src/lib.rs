@@ -20,6 +20,9 @@ pub fn run(args: &mut impl Iterator<Item = String>) -> Result<(), String> {
     let mut all_commands = Vec::new();
     for line in rdr.lines() {
         let line = line.map_err(|err| err.to_string())?;
+        if line.trim().is_empty() {
+            continue;
+        }
         let tokenizer = Tokenizer::new(&line);
         let tokens = tokenizer.tokenize();
         let mut parser = Parser::new(tokens);
