@@ -1,10 +1,10 @@
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Token<'a> {
     Literal(&'a str),
     Symbol(Symbol),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Symbol {
     Plus,
     And,
