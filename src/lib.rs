@@ -18,10 +18,11 @@ pub fn run(args: &mut impl Iterator<Item = String>) -> Result<(), String> {
     let file = File::open(file_path).map_err(|err| err.to_string())?;
     let rdr = BufReader::new(file);
     let mut all_commands = Vec::new();
-    for line in rdr.lines() {
+    for (i, line) in rdr.lines().enumerate() {
         let line = line.map_err(|err| err.to_string())?;
-        let tokenizer = Tokenizer::new(&line);
+        let tokenizer = Tokenizer::new(&line, i + 1);
         let tokens = tokenizer.tokenize();
+        println!("{tokens:?}");
         if tokens.is_empty() {
             continue;
         }

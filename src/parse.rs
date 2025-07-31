@@ -6,6 +6,7 @@ use crate::{
 #[derive(Debug)]
 pub enum Expr<'a> {
     Literal(&'a str),
+    QuotedLiteral(&'a str),
     Grouping(Box<Expr<'a>>),
     Combination(GroupKind, Box<Expr<'a>>, Box<Expr<'a>>),
 }
@@ -14,6 +15,7 @@ impl Expr<'_> {
     pub fn produce(&self) -> Command {
         match self {
             Self::Literal(literal) => Command::Named(literal.to_string()),
+            Self::QuotedLiteral(quoted_literal) => Command::Path(quoted_literal.to_string()),
             Self::Grouping(inner) => inner.produce(),
             Self::Combination(kind, left, right) => kind.group(&[left.produce(), right.produce()]),
         }
@@ -79,10 +81,11 @@ impl<'a> Parser<'a> {
             }
             return Expr::Grouping(Box::new(expr));
         }
-        let Token::Literal(literal) = self.advance() else {
-            panic!("I don't know what to do with this!");
-        };
-        Expr::Literal(literal)
+        match self.advance() {
+            Token::Literal(literal) => Expr::Literal(literal),
+            Token::QuotedLiteral(quoted_literal) => Expr::QuotedLiteral(quoted_literal),
+            Token::Symbol(symbol) => panic!("literal expected, symbol found instead: {symbol:?}"),
+        }
     }
 
     fn matches(&mut self, symbol: Symbol) -> bool {

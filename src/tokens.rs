@@ -1,6 +1,7 @@
 #[derive(Debug, Clone, PartialEq)]
 pub enum Token<'a> {
     Literal(&'a str),
+    QuotedLiteral(&'a str),
     Symbol(Symbol),
 }
 
@@ -29,6 +30,7 @@ impl Symbol {
 }
 
 pub struct Tokenizer<'a> {
+    line: usize,
     start: usize,
     curr: usize,
     source: &'a str,
@@ -37,8 +39,9 @@ pub struct Tokenizer<'a> {
 }
 
 impl<'a> Tokenizer<'a> {
-    pub fn new(source: &'a str) -> Self {
+    pub fn new(source: &'a str, line: usize) -> Self {
         Self {
+            line,
             start: 0,
             curr: 0,
             source,
@@ -68,14 +71,35 @@ impl<'a> Tokenizer<'a> {
             self.curr = self.source.len();
             return;
         }
-        // Now we have to be looking at an identifier. Capture values that are not symbols.
+        // Check for quotes
+        if c == '"' {
+            while self.curr < self.source.len() && self.chars[self.curr] != '"' {
+                self.curr += 1;
+            }
+            // Check for end quote
+            if self.curr == self.source.len() {
+                // no end quote found, cry about it
+                panic!("line {}: Failed to close quotes.", self.line);
+            } else {
+                // Consume the ending quote
+                self.curr += 1;
+            }
+            let quoted_literal = self.source[self.start + 1..self.curr - 1].trim();
+            self.tokens.push(Token::QuotedLiteral(quoted_literal));
+            return;
+        }
+        if c == ' ' {
+            // not in ident, skip.
+            return;
+        }
+        // Now we have to be looking at an (unquoted) identifier. Capture values that are not symbols.
         while self.curr < self.source.len() && Symbol::from_char(self.chars[self.curr]).is_none() {
             self.curr += 1;
         }
         // capture ident:
-        let literal = &self.source[self.start..self.curr];
-        if !literal.trim().is_empty() {
-            self.tokens.push(Token::Literal(literal.trim()));
+        let literal = self.source[self.start..self.curr].trim();
+        if !literal.is_empty() {
+            self.tokens.push(Token::Literal(literal));
         }
     }
 }

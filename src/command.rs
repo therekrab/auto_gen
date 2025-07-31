@@ -3,6 +3,7 @@
 #[derive(Debug, Clone)]
 pub enum Command {
     Named(String),
+    Path(String),
     Group(GroupKind, Vec<Command>),
 }
 
@@ -18,6 +19,7 @@ impl Command {
     pub fn to_json(&self) -> String {
         match self {
             Self::Named(name) => named_json(name),
+            Self::Path(name) => path_json(name),
             Self::Group(group, commands) => named_group(group, commands),
         }
     }
@@ -25,6 +27,7 @@ impl Command {
     fn unpack_group(&self, kind: &GroupKind) -> Option<Vec<Command>> {
         match self {
             Self::Named(_) => None,
+            Self::Path(_) => None,
             Self::Group(group_kind, inner) => {
                 if group_kind != kind {
                     return None;
@@ -47,6 +50,10 @@ fn named_group(group: &GroupKind, commands: &[Command]) -> String {
         .join(",");
     let kind = group.name();
     format!(r#"{{"type":"{kind}","data":{{"commands":[{commands_json}]}}}}"#)
+}
+
+fn path_json(name: &str) -> String {
+    format!(r#"{{"type":"path","data":{{"pathName":"{name}"}}}}"#)
 }
 
 pub fn finalize_json(json: &str) -> String {
@@ -87,6 +94,7 @@ impl Command {
     pub fn pretty(&self) -> String {
         match self {
             Self::Named(name) => format!("<{name}>"),
+            Self::Path(name) => format!("[path: {name}]"),
             Self::Group(group, cmds) => {
                 let pretty_cmds = cmds
                     .iter()
