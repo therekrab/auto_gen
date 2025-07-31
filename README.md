@@ -150,3 +150,12 @@ Instead, `auto_gen` simply notices the grouped commands and flattens the group t
 ```
 
 Autopilot also groups parallel groups inside parallel groups.
+
+## Paths
+
+You can even include path names in `auto_gen`. Just wrap the name of the path
+in double quotes, and you're good to go.
+
+```text
+command + "path name" + "another path" & final command
+```
