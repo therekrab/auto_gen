@@ -22,7 +22,6 @@ pub fn run(args: &mut impl Iterator<Item = String>) -> Result<(), String> {
         let line = line.map_err(|err| err.to_string())?;
         let tokenizer = Tokenizer::new(&line, i + 1);
         let tokens = tokenizer.tokenize();
-        println!("{tokens:?}");
         if tokens.is_empty() {
             continue;
         }
