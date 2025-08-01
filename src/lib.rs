@@ -14,7 +14,10 @@ use tokens::Tokenizer;
 pub fn run(args: &mut impl Iterator<Item = String>) -> Result<(), String> {
     // First argument
     args.next();
-    let file_path = args.next().ok_or("File path not supplied.")?;
+    let Some(file_path) = args.next() else {
+        println!("auto_gen version 1.0.0");
+        return Err(String::from("Err: no file path supplied"));
+    };
     let file = File::open(file_path).map_err(|err| err.to_string())?;
     let rdr = BufReader::new(file);
     let mut all_commands = Vec::new();
