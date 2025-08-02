@@ -24,8 +24,7 @@ Let's break down the syntax here.
 
 Firstly, note that we use the name of the named command without any special surrounding characters.
 Even if the command name has a space in it, there are no symbols around the command name.
-If all we had written was `"hello world"` instead of the real contents, this would be parsed as a command with the name `"hello world"` (including the quotes).
-**Note**: This also will break the super-simple JSON builder I made.
+If all we had written was `"hello world"` instead of the real contents, this would be parsed as a **path** with the name `hello world`.
 
 Secondly, we seem to be adding and multiplying command names.
 What's up with this?
@@ -98,6 +97,15 @@ Align Intake + Intake # this is a valid comment, too.
 
 Comments can really help organize and explain autonomous logic.
 
+### Paths
+
+You can even include path names in `auto_gen`. Just wrap the name of the path
+in double quotes, and you're good to go.
+
+```text
+command + "path name" + "another path" & final command
+```
+
 ## Exporting a command
 
 PathPlanner saves its commands to `src/main/deploy/pathplanner/autos/` and the commands are stored using JSON.
@@ -151,11 +159,3 @@ Instead, `auto_gen` simply notices the grouped commands and flattens the group t
 
 Autopilot also groups parallel groups inside parallel groups.
 
-## Paths
-
-You can even include path names in `auto_gen`. Just wrap the name of the path
-in double quotes, and you're good to go.
-
-```text
-command + "path name" + "another path" & final command
-```
