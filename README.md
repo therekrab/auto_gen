@@ -81,7 +81,7 @@ Drive to score
 Score
 ```
 
-The above will spit out the exact same auton as `Intake + Drive to piece + Drive to score + Score` but is easier to read.
+The above will spit out the exact same auton as `Intake & Drive to piece + Drive to score + Score` but is easier to read.
 
 ### Comments
 
